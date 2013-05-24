@@ -13,6 +13,7 @@ import os
 import re
 import pprint
 import traceback
+import json
 
 
 class Restart(Exception):
@@ -775,7 +776,12 @@ class Pdb(bdb.Bdb, cmd.Cmd):
 
     def do_printutf8(self, arg):
         try:
-            print >>self.stdout, self._getval(arg).decode('utf-8')
+            obj = self._getval(arg)
+            if isinstance(obj, list) or isinstance(obj, dict):
+                orig = json.dumps(obj)
+                print >>self.stdout, eval("u'''%s'''" % orig).encode('utf-8')
+            else:
+                print >>self.stdout, obj.encode('utf-8')
         except:
             pass
     do_p8 = do_printutf8
@@ -1343,3 +1349,4 @@ def main():
 if __name__ == '__main__':
     import pdb
     pdb.main()
+
