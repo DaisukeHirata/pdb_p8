@@ -786,6 +786,18 @@ class Pdb(bdb.Bdb, cmd.Cmd):
             pass
     do_p8 = do_printutf8
 
+    def do_pprintutf8(self, arg):
+        try:
+            obj = self._getval(arg)
+            if isinstance(obj, list) or isinstance(obj, dict):
+                orig = json.dumps(obj, indent=2)
+                print >>self.stdout, eval("u'''%s'''" % orig).encode('utf-8')
+            else:
+                print >>self.stdout, obj.encode('utf-8')
+        except:
+            pass
+    do_pp8 = do_pprintutf8
+
     def do_pp(self, arg):
         try:
             pprint.pprint(self._getval(arg), self.stdout)
